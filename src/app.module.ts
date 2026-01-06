@@ -1,13 +1,22 @@
 import { Module } from '@nestjs/common';
+import { TypeOrmModule } from '@nestjs/typeorm';
 import { LoggerModule } from 'nestjs-pino';
 import { AppController } from './modules/app/app.controller';
 import { AppService } from './modules/app/app.service';
 import { HealthModule } from './modules/health/health.module';
 import { EmailModule } from './modules/email/email.module';
 import { loggerConfig } from './config/logger';
+import { ConfigModule } from './modules/config/config.module';
+import { typeOrmConfig } from './config/typeorm-nestjs';
 
 @Module({
-  imports: [LoggerModule.forRoot(loggerConfig), HealthModule, EmailModule],
+  imports: [
+    LoggerModule.forRoot(loggerConfig),
+    TypeOrmModule.forRoot(typeOrmConfig),
+    HealthModule,
+    EmailModule,
+    ConfigModule,
+  ],
   controllers: [AppController],
   providers: [AppService],
 })
