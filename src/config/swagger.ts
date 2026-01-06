@@ -14,10 +14,10 @@ export const swaggerSetup = (app: INestApplication) => {
   };
 
   const config = new DocumentBuilder()
-    .setTitle('Creative Hub API')
-    .setDescription('This is the API for the Creative Hub project.')
+    .setTitle('NestJS Template API')
+    .setDescription('This is the API for the NestJS Template project.')
     .setVersion('1.0')
-    .addTag('Creative Hub')
+    .addTag('NestJS Template')
     .build();
   const documentFactory = () =>
     SwaggerModule.createDocument(app, config, options);
