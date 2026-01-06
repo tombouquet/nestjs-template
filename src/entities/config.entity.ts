@@ -1,6 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsString } from 'class-validator';
-import { BaseEntity, Column, Entity, Index } from 'typeorm';
+import { Column, Entity, Index } from 'typeorm';
+import { BaseEntity } from '../common/base.entity';
 
 @Entity()
 @Index(['key'], { unique: true })
