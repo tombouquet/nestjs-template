@@ -20,7 +20,9 @@
     "test:e2e": "jest --config ./test/jest-e2e.json",
     "migration:generate": "./scripts/migration-generate.sh",
     "migration:run": "npx typeorm-ts-node-commonjs migration:run -d src/config/typeorm.ts",
-    "migration:revert": "npx typeorm-ts-node-commonjs migration:revert -d src/config/typeorm.ts"
+    "migration:revert": "npx typeorm-ts-node-commonjs migration:revert -d src/config/typeorm.ts",
+    "generate": "kubb generate",
+    "generate:watch": "kubb generate --watch"
   },
   "dependencies": {
     "@nestjs/axios": "^4.0.1",
@@ -45,6 +47,11 @@
   "devDependencies": {
     "@eslint/eslintrc": "^3.2.0",
     "@eslint/js": "^9.18.0",
+    "@kubb/cli": "^4.12.15",
+    "@kubb/core": "^4.12.15",
+    "@kubb/plugin-oas": "^4.12.15",
+    "@kubb/plugin-react-query": "^4.12.15",
+    "@kubb/plugin-ts": "^4.12.15",
     "@nestjs/cli": "^11.0.0",
     "@nestjs/schematics": "^11.0.0",
     "@nestjs/testing": "^11.0.1",
