@@ -16,8 +16,11 @@ COPY . .
 # Build the NestJS application
 RUN yarn build
 
+# Verify the build output exists
+RUN test -f dist/src/main.js || (echo "Build failed: dist/src/main.js not found" && exit 1)
+
 # Expose the application port
 EXPOSE 4000
 
 # Command to run the application
-CMD ["node", "dist/main"]
+CMD ["node", "dist/src/main.js"]
