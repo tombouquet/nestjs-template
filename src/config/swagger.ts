@@ -19,6 +19,7 @@ export const swaggerSetup = (app: INestApplication) => {
     .setVersion('1.0')
     .addTag('NestJS Template')
     .build();
+
   const documentFactory = () =>
     SwaggerModule.createDocument(app, config, options);
   SwaggerModule.setup('api', app, documentFactory);
