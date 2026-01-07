@@ -5,6 +5,7 @@ import { AppController } from './modules/app/app.controller';
 import { AppService } from './modules/app/app.service';
 import { HealthModule } from './modules/health/health.module';
 import { EmailModule } from './modules/email/email.module';
+import { TaskModule } from './modules/task/task.module';
 import { loggerConfig } from './config/logger';
 import { ConfigModule } from './modules/config/config.module';
 import { typeOrmConfig } from './config/typeorm-nestjs';
@@ -15,6 +16,7 @@ import { typeOrmConfig } from './config/typeorm-nestjs';
     TypeOrmModule.forRoot(typeOrmConfig),
     HealthModule,
     EmailModule,
+    TaskModule,
     ConfigModule,
   ],
   controllers: [AppController],
