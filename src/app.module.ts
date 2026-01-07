@@ -8,11 +8,14 @@ import { EmailModule } from './modules/email/email.module';
 import { loggerConfig } from './config/logger';
 import { ConfigModule } from './modules/config/config.module';
 import { typeOrmConfig } from './config/typeorm-nestjs';
+import { BullModule } from '@nestjs/bullmq';
+import { bullmqConfig } from './config/bullmq';
 
 @Module({
   imports: [
     LoggerModule.forRoot(loggerConfig),
     TypeOrmModule.forRoot(typeOrmConfig),
+    BullModule.forRoot(bullmqConfig),
     HealthModule,
     EmailModule,
     ConfigModule,
