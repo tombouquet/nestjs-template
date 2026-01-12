@@ -4,6 +4,8 @@ import {
   SwaggerDocumentOptions,
   SwaggerModule,
 } from '@nestjs/swagger';
+import { apiReference } from '@scalar/nestjs-api-reference';
+import { Request, Response } from 'express';
 import * as fs from 'fs';
 import * as path from 'path';
 
@@ -22,12 +24,35 @@ export const swaggerSetup = (app: INestApplication) => {
 
   const documentFactory = () =>
     SwaggerModule.createDocument(app, config, options);
+
+  // Create the Swagger document
+  const document = documentFactory();
+
+  // Setup Swagger UI (optional - can be removed if only using Scalar)
   SwaggerModule.setup('api', app, documentFactory);
 
-  // Write Swagger JSON to file
-  const document = documentFactory();
+  // Create endpoint to serve Swagger JSON spec
+  app
+    .getHttpAdapter()
+    .get('/swagger-spec.json', (_req: Request, res: Response) => {
+      res.setHeader('Content-Type', 'application/json');
+      res.send(document);
+    });
+
+  // Write Swagger JSON to file for external tools
   const outputPath = path.resolve(process.cwd(), 'swagger-spec.json');
   fs.writeFileSync(outputPath, JSON.stringify(document, null, 2), {
     encoding: 'utf8',
   });
+
+  // Setup Scalar API Reference
+  app.use(
+    '/reference',
+    apiReference({
+      spec: {
+        url: '/swagger-spec.json',
+      },
+      showDeveloperTools: 'never',
+    }),
+  );
 };
