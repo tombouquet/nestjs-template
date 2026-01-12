@@ -26,7 +26,7 @@ export class DirectQueueProvider implements QueueProvider {
         ? process.env.SELF_URL
         : 'http://localhost:4000';
 
-    const url = `${baseUrl}/task/${taskName}`;
+    const url = `${baseUrl || ''}/task/${taskName}`;
 
     // Small delay to simulate async behavior
     await new Promise((resolve) => setTimeout(resolve, 1000));

@@ -41,7 +41,7 @@ async function bootstrap() {
   const host =
     typeof address === 'string'
       ? address
-      : `http://${address.address === '::' ? 'localhost' : address.address}:${address.port}`;
+      : `http://${address.address === '::' ? 'localhost' : address.address}:${address.port.toString()}`;
 
   app.get(Logger).log(`Application is running on: ${host}`);
 }

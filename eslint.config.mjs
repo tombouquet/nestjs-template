@@ -1,4 +1,3 @@
-// @ts-check
 import eslint from '@eslint/js';
 import eslintPluginPrettierRecommended from 'eslint-plugin-prettier/recommended';
 import globals from 'globals';
@@ -9,7 +8,7 @@ export default tseslint.config(
     ignores: ['eslint.config.mjs', 'scripts/**/*.js'],
   },
   eslint.configs.recommended,
-  ...tseslint.configs.recommendedTypeChecked,
+  ...tseslint.configs.strictTypeChecked,
   eslintPluginPrettierRecommended,
   {
     languageOptions: {
@@ -26,9 +25,22 @@ export default tseslint.config(
   },
   {
     rules: {
-      '@typescript-eslint/no-explicit-any': 'off',
-      '@typescript-eslint/no-floating-promises': 'warn',
-      '@typescript-eslint/no-unsafe-argument': 'warn',
+      '@typescript-eslint/no-explicit-any': 'error',
+      '@typescript-eslint/no-floating-promises': 'error',
+      '@typescript-eslint/no-unsafe-argument': 'error',
+      '@typescript-eslint/no-unsafe-assignment': 'error',
+      '@typescript-eslint/no-unsafe-call': 'error',
+      '@typescript-eslint/no-unsafe-member-access': 'error',
+      '@typescript-eslint/no-unsafe-return': 'error',
+      // NestJS modules are decorated classes, not truly empty
+      '@typescript-eslint/no-extraneous-class': 'off',
+      // Allow numbers and undefined in template literals
+      '@typescript-eslint/restrict-template-expressions': [
+        'error',
+        { allowNumber: true, allowNullish: true },
+      ],
+      // Type parameters can be useful for inference even if used once
+      '@typescript-eslint/no-unnecessary-type-parameters': 'off',
     },
   },
 );
