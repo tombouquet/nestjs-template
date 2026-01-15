@@ -1,20 +1,20 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsString } from 'class-validator';
-import { Column, Entity, Index } from 'typeorm';
-import { BaseEntity } from '../common/base.entity';
+import { IsNotEmpty, IsString } from 'class-validator';
+import { Column, Entity, PrimaryColumn } from 'typeorm';
 
 @Entity()
-@Index(['key'], { unique: true })
-export class ConfigEntity<T extends string> extends BaseEntity {
+export class ConfigEntity {
   @ApiProperty({
     description: 'Unique configuration key identifier',
     example: 'APP_NAME',
     required: true,
   })
-  @Column({
+  @PrimaryColumn({
     type: 'text',
   })
-  key: T;
+  @IsString()
+  @IsNotEmpty()
+  key: string;
 
   @ApiProperty({
     description: 'Configuration value associated with the key',
@@ -23,5 +23,6 @@ export class ConfigEntity<T extends string> extends BaseEntity {
   })
   @Column()
   @IsString()
+  @IsNotEmpty()
   value: string;
 }

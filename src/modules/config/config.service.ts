@@ -14,7 +14,7 @@ export class ConfigService {
 
   constructor(
     @InjectRepository(ConfigEntity)
-    private readonly configRepository: Repository<ConfigEntity<string>>,
+    private readonly configRepository: Repository<ConfigEntity>,
   ) {}
 
   /**
@@ -27,7 +27,7 @@ export class ConfigService {
    * // Returns: 'NestJS Template' or undefined
    * ```
    */
-  async get<T extends string>(key: T): Promise<string | undefined> {
+  async get(key: string): Promise<string | undefined> {
     const config = await this.configRepository.findOne({
       where: { key },
     });
@@ -52,8 +52,8 @@ export class ConfigService {
    * // Returns: 'NestJS Template' or 'Default Name' if not found
    * ```
    */
-  async getOrFail<T extends string>(
-    key: T,
+  async getOrFail(
+    key: string,
     defaultValue?: string,
     options?: ConfigOptions,
   ): Promise<string> {
@@ -84,7 +84,7 @@ export class ConfigService {
    * await configService.set('APP_NAME', 'My New App Name');
    * ```
    */
-  async set<T extends string>(key: T, value: string): Promise<ConfigEntity<T>> {
+  async set(key: string, value: string): Promise<ConfigEntity> {
     let config = await this.configRepository.findOne({
       where: { key },
     });
@@ -95,11 +95,11 @@ export class ConfigService {
       this.logger.log(`Updated configuration key '${key}'`);
     } else {
       config = this.configRepository.create({ key, value });
-      config = (await this.configRepository.save(config)) as ConfigEntity<T>;
+      config = await this.configRepository.save(config);
       this.logger.log(`Created configuration key '${key}'`);
     }
 
-    return config as ConfigEntity<T>;
+    return config;
   }
 
   /**
@@ -140,12 +140,12 @@ export class ConfigService {
    * // Returns: false (uses default value if key not found)
    * ```
    */
-  async isConfigTruthy<T extends string>(
-    key: T,
+  async isConfigTruthy(
+    key: string,
     defaultValue?: string,
     options?: ConfigOptions,
   ): Promise<boolean> {
-    const value = await this.getOrFail<T>(key, defaultValue, options);
+    const value = await this.getOrFail(key, defaultValue, options);
     return isTruthy(value);
   }
 
@@ -164,12 +164,12 @@ export class ConfigService {
    * // Returns: false (uses default value if key not found)
    * ```
    */
-  async isConfigFalsy<T extends string>(
-    key: T,
+  async isConfigFalsy(
+    key: string,
     defaultValue?: string,
     options?: ConfigOptions,
   ): Promise<boolean> {
-    const value = await this.getOrFail<T>(key, defaultValue, options);
+    const value = await this.getOrFail(key, defaultValue, options);
     return isFalsy(value);
   }
 }
