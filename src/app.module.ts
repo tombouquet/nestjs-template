@@ -9,6 +9,7 @@ import { TaskModule } from './modules/task/task.module';
 import { loggerConfig } from './config/logger';
 import { ConfigModule } from './modules/config/config.module';
 import { typeOrmConfig } from './config/typeorm-nestjs';
+import { AuthModule } from './modules/auth/auth.module';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { typeOrmConfig } from './config/typeorm-nestjs';
     EmailModule,
     TaskModule,
     ConfigModule,
+    AuthModule,
   ],
   controllers: [AppController],
   providers: [AppService],
