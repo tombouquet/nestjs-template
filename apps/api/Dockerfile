@@ -4,10 +4,12 @@ FROM oven/bun:1
 # Set the working directory inside the container
 WORKDIR /usr/src/app
 
-# Copy package.json and lockfile to the working directory
-COPY package.json bun.lockb* yarn.lock* ./
+# Copy all package.json files and lockfile for monorepo workspace resolution
+COPY package.json bun.lock* ./
+COPY apps/api/package.json ./apps/api/
+COPY packages/.gitkeep ./packages/
 
-# Install the application dependencies
+# Install the application dependencies (including workspace dependencies)
 RUN bun install --frozen-lockfile
 
 # Copy the rest of the application files
@@ -20,4 +22,4 @@ RUN bun run build
 EXPOSE 4000
 
 # Command to run the application
-CMD ["bun", "run", "dist/src/main.js"]
+CMD ["bun", "run", "apps/api/dist/src/main.js"]
