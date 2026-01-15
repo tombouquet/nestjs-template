@@ -28,9 +28,6 @@ export const swaggerSetup = (app: INestApplication) => {
   // Create the Swagger document
   const document = documentFactory();
 
-  // Setup Swagger UI (optional - can be removed if only using Scalar)
-  SwaggerModule.setup('api', app, documentFactory);
-
   // Create endpoint to serve Swagger JSON spec
   app
     .getHttpAdapter()
