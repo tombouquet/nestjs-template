@@ -12,7 +12,6 @@
     "dev": "nest start --watch",
     "start:debug": "nest start --debug --watch",
     "start:prod": "node dist/src/main.js",
-    "migration:run-prod": "node scripts/migration-run-prod.js",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
     "test": "jest",
     "test:watch": "jest --watch",
@@ -21,6 +20,7 @@
     "test:e2e": "jest --config ./test/jest-e2e.json",
     "migration:generate": "./scripts/migration-generate.sh",
     "migration:run": "npx typeorm-ts-node-commonjs migration:run -d src/config/typeorm.ts",
+    "migration:run:prod": "node scripts/migration-run-prod.js",
     "migration:revert": "npx typeorm-ts-node-commonjs migration:revert -d src/config/typeorm.ts",
     "generate": "kubb generate",
     "generate:watch": "kubb generate --watch"
