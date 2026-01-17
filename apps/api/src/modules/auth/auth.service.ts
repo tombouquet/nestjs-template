@@ -49,7 +49,10 @@ export class AuthService {
     return this.generateAuthResponse(user);
   }
 
-  async validateUser(email: string, password: string): Promise<UserEntity | null> {
+  async validateUser(
+    email: string,
+    password: string,
+  ): Promise<UserEntity | null> {
     const user = await this.userRepository.findOne({
       where: { email },
       select: ['id', 'email', 'password', 'roles', 'createdAt', 'updatedAt'],

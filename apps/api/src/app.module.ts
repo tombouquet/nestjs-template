@@ -11,11 +11,13 @@ import { ConfigModule } from './modules/config/config.module';
 import { typeOrmConfig } from './config/typeorm-nestjs';
 import { AuthModule } from './modules/auth/auth.module';
 import { FileModule } from './modules/file/file.module';
+import { LoggingModule } from './modules/logging/logging.module';
 
 @Module({
   imports: [
     LoggerModule.forRoot(loggerConfig),
     TypeOrmModule.forRoot(typeOrmConfig),
+    LoggingModule,
     HealthModule,
     EmailModule,
     TaskModule,
