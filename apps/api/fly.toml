@@ -6,6 +6,10 @@
 app = 'nestjs-template'
 primary_region = 'syd'
 
+[env]
+  PORT = "4000"
+  NODE_ENV = "production"
+
 [build]
 
 [http_service]

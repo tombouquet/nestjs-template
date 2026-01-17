@@ -35,15 +35,16 @@ async function bootstrap() {
   );
 
   // Start the server
-  const port = process.env.PORT ?? 4000;
-  const server = (await app.listen(port)) as Server;
+  const port = Number(process.env.PORT ?? 4000);
+  const host = process.env.HOST ?? '0.0.0.0';
+  const server = (await app.listen(port, host)) as Server;
   const address = server.address() as AddressInfo;
-  const host =
+  const url =
     typeof address === 'string'
       ? address
       : `http://${address.address === '::' ? 'localhost' : address.address}:${address.port.toString()}`;
 
-  app.get(Logger).log(`Application is running on: ${host}`);
+  app.get(Logger).log(`Application is running on: ${url}`);
 }
 
 void bootstrap();

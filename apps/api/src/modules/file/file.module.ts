@@ -8,6 +8,7 @@ import {
   STORAGE_PROVIDER_TOKEN,
 } from './interfaces/storage-provider.interface';
 import { LocalS3Provider } from './providers/local-s3.provider';
+import { UnimplementedFileService } from './unimplemented-file.service';
 
 /**
  * File module for uploading, storing, and managing files
@@ -17,36 +18,48 @@ import { LocalS3Provider } from './providers/local-s3.provider';
  * and updating this module to use them.
  */
 @Module({
-  imports: [TypeOrmModule.forFeature([FileEntity])],
+  imports:
+    process.env.NODE_ENV === 'production'
+      ? []
+      : [TypeOrmModule.forFeature([FileEntity])],
   controllers: [FileController],
-  providers: [
-    FileService,
-    LocalS3Provider,
-    {
-      provide: STORAGE_PROVIDER_TOKEN,
-      useFactory: (localS3Provider: LocalS3Provider): StorageProvider => {
-        // You can change the provider here by:
-        // 1. Direct swap: return a different provider instance
-        // 2. Environment-based: use process.env.STORAGE_PROVIDER to select
+  providers:
+    process.env.NODE_ENV === 'production'
+      ? [
+          {
+            // Keep the same injection token used everywhere (FileController, other modules)
+            provide: FileService,
+            useClass: UnimplementedFileService,
+          },
+        ]
+      : [
+          FileService,
+          LocalS3Provider,
+          {
+            provide: STORAGE_PROVIDER_TOKEN,
+            useFactory: (localS3Provider: LocalS3Provider): StorageProvider => {
+              // You can change the provider here by:
+              // 1. Direct swap: return a different provider instance
+              // 2. Environment-based: use process.env.STORAGE_PROVIDER to select
 
-        const providerType = process.env.STORAGE_PROVIDER || 'local-s3';
+              const providerType = process.env.STORAGE_PROVIDER || 'local-s3';
 
-        switch (providerType) {
-          case 'local-s3':
-          default:
-            return localS3Provider;
-          // Add more cases here when you create additional providers:
-          // case 'aws-s3':
-          //   return awsS3Provider;
-          // case 'gcs':
-          //   return gcsProvider;
-          // case 'azure-blob':
-          //   return azureBlobProvider;
-        }
-      },
-      inject: [LocalS3Provider],
-    },
-  ],
+              switch (providerType) {
+                case 'local-s3':
+                default:
+                  return localS3Provider;
+                // Add more cases here when you create additional providers:
+                // case 'aws-s3':
+                //   return awsS3Provider;
+                // case 'gcs':
+                //   return gcsProvider;
+                // case 'azure-blob':
+                //   return azureBlobProvider;
+              }
+            },
+            inject: [LocalS3Provider],
+          },
+        ],
   exports: [FileService],
 })
 export class FileModule {}
