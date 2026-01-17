@@ -1,14 +1,15 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Column, Entity, Index, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, Index } from 'typeorm';
+import { BaseEntity } from '../common/base.entity';
 
 @Entity()
 @Index(['token'], { unique: true })
-export class AccessTokenEntity {
-  @PrimaryGeneratedColumn('uuid', { name: 'token' })
+export class AccessTokenEntity extends BaseEntity {
   @ApiProperty({
     example: '0d237300-7123-42dc-92c8-c2bcc57d394e',
     description: 'The API key/token value',
   })
+  @Column({ unique: true })
   token: string;
 
   @ApiProperty({

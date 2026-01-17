@@ -289,6 +289,169 @@
           "Auth"
         ]
       }
+    },
+    "/files/upload": {
+      "post": {
+        "operationId": "uploadFile",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "file": {
+                    "type": "string",
+                    "format": "binary",
+                    "description": "The file to upload"
+                  },
+                  "folder": {
+                    "type": "string",
+                    "description": "Optional folder path for organization"
+                  }
+                },
+                "required": [
+                  "file"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "File uploaded successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FileResponseDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid file or file too large"
+          }
+        },
+        "summary": "Upload a file",
+        "tags": [
+          "files"
+        ]
+      }
+    },
+    "/files": {
+      "get": {
+        "operationId": "listFiles",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "List of all files",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/FileResponseDto"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "summary": "List all files",
+        "tags": [
+          "files"
+        ]
+      }
+    },
+    "/files/{id}": {
+      "get": {
+        "operationId": "getFile",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "File metadata with signed URL",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FileResponseDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "File not found"
+          }
+        },
+        "summary": "Get file metadata and signed URL",
+        "tags": [
+          "files"
+        ]
+      },
+      "delete": {
+        "operationId": "deleteFile",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          },
+          "204": {
+            "description": "File deleted successfully"
+          },
+          "404": {
+            "description": "File not found"
+          }
+        },
+        "summary": "Delete a file",
+        "tags": [
+          "files"
+        ]
+      }
+    },
+    "/files/{id}/download": {
+      "get": {
+        "operationId": "downloadFile",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "File content stream"
+          },
+          "404": {
+            "description": "File not found"
+          }
+        },
+        "summary": "Download file content",
+        "tags": [
+          "files"
+        ]
+      }
     }
   },
   "info": {
@@ -411,6 +574,61 @@
         "required": [
           "email",
           "password"
+        ]
+      },
+      "FileResponseDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Unique identifier of the file",
+            "example": "0d237300-7123-42dc-92c8-c2bcc57d394e"
+          },
+          "originalName": {
+            "type": "string",
+            "description": "Original filename as uploaded",
+            "example": "document.pdf"
+          },
+          "mimeType": {
+            "type": "string",
+            "description": "MIME type of the file",
+            "example": "application/pdf"
+          },
+          "size": {
+            "type": "number",
+            "description": "File size in bytes",
+            "example": 1024
+          },
+          "storageKey": {
+            "type": "string",
+            "description": "Storage key/path in the storage backend",
+            "example": "uploads/2024/01/abc123-document.pdf"
+          },
+          "bucket": {
+            "type": "string",
+            "description": "Storage bucket name",
+            "example": "local-files"
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string",
+            "description": "Created at date",
+            "example": "2024-01-15T10:30:00.000Z"
+          },
+          "url": {
+            "type": "string",
+            "description": "Signed URL for temporary access (when requested)",
+            "example": "https://storage.example.com/file?signature=..."
+          }
+        },
+        "required": [
+          "id",
+          "originalName",
+          "mimeType",
+          "size",
+          "storageKey",
+          "bucket",
+          "createdAt"
         ]
       }
     }

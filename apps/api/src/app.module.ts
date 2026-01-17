@@ -10,6 +10,7 @@ import { loggerConfig } from './config/logger';
 import { ConfigModule } from './modules/config/config.module';
 import { typeOrmConfig } from './config/typeorm-nestjs';
 import { AuthModule } from './modules/auth/auth.module';
+import { FileModule } from './modules/file/file.module';
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { AuthModule } from './modules/auth/auth.module';
     TaskModule,
     ConfigModule,
     AuthModule,
+    FileModule,
   ],
   controllers: [AppController],
   providers: [AppService],

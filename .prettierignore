@@ -6,7 +6,7 @@ dist/
 build/
 
 # Migration files (auto-generated)
-src/migrations/
+apps/api/src/migrations/
 
 # Logs
 *.log
