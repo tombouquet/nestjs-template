@@ -15,4 +15,3 @@ export class UnimplementedEmailService {
     return this.unimplemented();
   }
 }
-
