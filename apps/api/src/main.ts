@@ -34,8 +34,9 @@ async function bootstrap() {
   );
 
   // Start the server
+  // Always listen on 0.0.0.0 to accept connections from all interfaces (required for Fly.io)
   const port = Number(process.env.PORT ?? 4000);
-  const host = process.env.HOST ?? '0.0.0.0';
+  const host = '0.0.0.0';
   const server = (await app.listen(port, host)) as Server;
   const address = server.address();
   const url = !address
