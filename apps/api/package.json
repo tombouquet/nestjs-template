@@ -23,7 +23,8 @@
     "migration:run:prod": "node scripts/migration-run-prod.js",
     "migration:revert": "npx typeorm-ts-node-commonjs migration:revert -d src/config/typeorm.ts",
     "generate": "kubb generate",
-    "generate:watch": "kubb generate --watch"
+    "generate:watch": "kubb generate --watch",
+    "email:dev": "email dev --dir src/modules/email/templates"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.971.0",
@@ -37,6 +38,8 @@
     "@nestjs/swagger": "^11.2.3",
     "@nestjs/terminus": "^11.0.0",
     "@nestjs/typeorm": "^11.0.0",
+    "@react-email/components": "1.0.5",
+    "@react-email/render": "2.0.3",
     "@scalar/nestjs-api-reference": "^1.0.15",
     "@upstash/qstash": "^2.8.4",
     "axios": "^1.13.2",
@@ -51,6 +54,9 @@
     "pg": "^8.16.3",
     "pino": "^10.1.0",
     "pino-http": "^11.0.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-email": "^3.0.1",
     "reflect-metadata": "^0.2.2",
     "rxjs": "^7.8.1",
     "typeorm": "^0.3.28",
@@ -80,6 +86,8 @@
     "@types/passport-jwt": "^4.0.1",
     "@types/passport-local": "^1.0.38",
     "@types/pg": "^8.16.0",
+    "@types/react": "^18.3.12",
+    "@types/react-dom": "^18.3.1",
     "@types/supertest": "^6.0.2",
     "@types/uuid": "^11.0.0",
     "eslint": "^9.18.0",

@@ -190,6 +190,64 @@
         ]
       }
     },
+    "/email/test": {
+      "post": {
+        "description": "Sends a test email with custom HTML/text content. Only available in development mode.",
+        "operationId": "testEmail",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SendEmailDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Test email sent successfully"
+          },
+          "403": {
+            "description": "Endpoint only available in development mode"
+          }
+        },
+        "summary": "Send a test email (development only)",
+        "tags": [
+          "Email Testing"
+        ]
+      }
+    },
+    "/email/test/template": {
+      "post": {
+        "description": "Sends a test email using a React email template. Only available in development mode.",
+        "operationId": "testTemplateEmail",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TestTemplateEmailDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Test template email sent successfully"
+          },
+          "403": {
+            "description": "Endpoint only available in development mode"
+          }
+        },
+        "summary": "Send a test template email (development only)",
+        "tags": [
+          "Email Testing"
+        ]
+      }
+    },
     "/auth/register": {
       "post": {
         "operationId": "register",
@@ -469,6 +527,87 @@
   "servers": [],
   "components": {
     "schemas": {
+      "SendEmailDto": {
+        "type": "object",
+        "properties": {
+          "to": {
+            "type": "string",
+            "format": "email",
+            "example": "user@example.com",
+            "description": "Recipient email address"
+          },
+          "subject": {
+            "type": "string",
+            "example": "Welcome to our service",
+            "description": "Email subject"
+          },
+          "text": {
+            "type": "string",
+            "example": "This is a plain text email body",
+            "description": "Plain text email body"
+          },
+          "html": {
+            "type": "string",
+            "example": "<h1>This is an HTML email body</h1>",
+            "description": "HTML email body"
+          }
+        },
+        "required": [
+          "to",
+          "subject"
+        ]
+      },
+      "TestTemplateEmailDto": {
+        "type": "object",
+        "properties": {
+          "to": {
+            "type": "string",
+            "format": "email",
+            "example": "test@example.com",
+            "description": "Recipient email address"
+          },
+          "templateName": {
+            "type": "string",
+            "example": "welcome",
+            "description": "Template name to use",
+            "enum": [
+              "welcome",
+              "password-reset"
+            ]
+          },
+          "subject": {
+            "type": "string",
+            "example": "Test Email",
+            "description": "Email subject"
+          },
+          "name": {
+            "type": "string",
+            "example": "John Doe",
+            "description": "Name for welcome template"
+          },
+          "email": {
+            "type": "string",
+            "format": "email",
+            "example": "user@example.com",
+            "description": "Email for welcome template"
+          },
+          "resetLink": {
+            "type": "string",
+            "example": "https://example.com/reset-password?token=abc123",
+            "description": "Reset link for password-reset template"
+          },
+          "expiresIn": {
+            "type": "string",
+            "example": "1 hour",
+            "description": "Expiration time for password-reset template"
+          }
+        },
+        "required": [
+          "to",
+          "templateName",
+          "subject"
+        ]
+      },
       "RegisterDto": {
         "type": "object",
         "properties": {

@@ -2,13 +2,15 @@ import { Injectable, Logger } from '@nestjs/common';
 import type { Transporter, SendMailOptions } from 'nodemailer';
 import { createEmailTransporter } from '../../config/email';
 import { SendEmailDto } from './dto/send-email.dto';
+import { EmailTemplateService } from './email-template.service';
+import type { TemplateName, TemplateProps } from './templates';
 
 @Injectable()
 export class EmailService {
   private readonly logger = new Logger(EmailService.name);
   private transporter: Transporter;
 
-  constructor() {
+  constructor(private readonly emailTemplateService: EmailTemplateService) {
     this.transporter = createEmailTransporter();
   }
 
@@ -44,6 +46,42 @@ export class EmailService {
       this.logger.error(
         `Failed to send email to ${to}: ${errorMessage}`,
         errorStack,
+      );
+      throw error;
+    }
+  }
+
+  /**
+   * Sends an email using a React email template
+   * @param templateName The name of the template to use
+   * @param props The props to pass to the template component
+   * @param options Email options including recipient and subject
+   */
+  async sendTemplateEmail<T extends TemplateName>(
+    templateName: T,
+    props: TemplateProps[T],
+    options: { to: string; subject: string },
+  ): Promise<void> {
+    const { to, subject } = options;
+
+    try {
+      // Render the template to HTML and text
+      const { html, text } =
+        await this.emailTemplateService.renderTemplate(templateName, props);
+
+      // Send using the existing sendEmail method
+      await this.sendEmail({
+        to,
+        subject,
+        html,
+        text,
+      });
+    } catch (error) {
+      const errorMessage =
+        error instanceof Error ? error.message : 'Unknown error';
+      this.logger.error(
+        `Failed to send template email "${templateName}" to ${to}: ${errorMessage}`,
+        error instanceof Error ? error.stack : undefined,
       );
       throw error;
     }
