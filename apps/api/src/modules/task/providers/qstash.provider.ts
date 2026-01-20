@@ -9,19 +9,23 @@ import { QueueProvider } from '../interfaces/queue-provider.interface';
 @Injectable()
 export class QStashProvider implements QueueProvider {
   private readonly logger = new Logger(QStashProvider.name);
-  private readonly client: Client;
+  private client: Client | null = null;
 
-  constructor() {
-    const token = process.env.QSTASH_TOKEN;
-    if (!token) {
-      throw new Error(
-        'QSTASH_TOKEN environment variable is required for QStashProvider',
-      );
+  private getClient(): Client {
+    if (!this.client) {
+      const token = process.env.QSTASH_TOKEN;
+      if (!token) {
+        throw new Error(
+          'QSTASH_TOKEN environment variable is required for QStashProvider',
+        );
+      }
+
+      this.client = new Client({
+        token,
+      });
     }
 
-    this.client = new Client({
-      token,
-    });
+    return this.client;
   }
 
   /**
@@ -46,7 +50,7 @@ export class QStashProvider implements QueueProvider {
     const url = `${baseUrl}/task/${taskName}`;
 
     try {
-      await this.client.publish({
+      await this.getClient().publish({
         url,
         body: JSON.stringify(body),
         headers: {
