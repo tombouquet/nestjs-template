@@ -5,7 +5,6 @@ import { ValidationPipe } from '@nestjs/common';
 import { Logger } from 'nestjs-pino';
 import { swaggerSetup } from './config/swagger';
 import { Server } from 'http';
-import { AddressInfo } from 'net';
 import { corsSetup } from './config/cors';
 
 dotenv.config({
@@ -38,11 +37,12 @@ async function bootstrap() {
   const port = Number(process.env.PORT ?? 4000);
   const host = process.env.HOST ?? '0.0.0.0';
   const server = (await app.listen(port, host)) as Server;
-  const address = server.address() as AddressInfo;
-  const url =
-    typeof address === 'string'
+  const address = server.address();
+  const url = !address
+    ? `http://${host}:${port}`
+    : typeof address === 'string'
       ? address
-      : `http://${address.address === '::' || address.address === '::1' || address.address === '0.0.0.0' ? 'localhost' : address.address}:${address.port}`;
+      : `http://${address.address}:${address.port}`;
 
   app.get(Logger).log(`Application is running on: ${url}`);
 }
