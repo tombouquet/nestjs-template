@@ -8,7 +8,6 @@ primary_region = 'syd'
 
 [env]
   NODE_ENV = "production"
-  PORT = "4000"
 
 [build]
 
