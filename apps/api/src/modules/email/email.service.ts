@@ -8,10 +8,15 @@ import type { TemplateName, TemplateProps } from './templates';
 @Injectable()
 export class EmailService {
   private readonly logger = new Logger(EmailService.name);
-  private transporter: Transporter;
+  private transporter: Transporter | null = null;
 
-  constructor(private readonly emailTemplateService: EmailTemplateService) {
-    this.transporter = createEmailTransporter();
+  constructor(private readonly emailTemplateService: EmailTemplateService) {}
+
+  private getTransporter(): Transporter {
+    if (!this.transporter) {
+      this.transporter = createEmailTransporter();
+    }
+    return this.transporter;
   }
 
   /**
@@ -35,7 +40,7 @@ export class EmailService {
         html,
       };
 
-      await this.transporter.sendMail(mailOptions);
+      await this.getTransporter().sendMail(mailOptions);
       this.logger.log(
         `Email sent successfully to ${to} with subject ${subject}`,
       );
@@ -66,8 +71,10 @@ export class EmailService {
 
     try {
       // Render the template to HTML and text
-      const { html, text } =
-        await this.emailTemplateService.renderTemplate(templateName, props);
+      const { html, text } = await this.emailTemplateService.renderTemplate(
+        templateName,
+        props,
+      );
 
       // Send using the existing sendEmail method
       await this.sendEmail({
