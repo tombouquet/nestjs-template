@@ -7,7 +7,7 @@ app = 'nestjs-template'
 primary_region = 'syd'
 
 [env]
-  NODE_ENV = "production"
+  NODE_ENV = "development"
 
 [build]
 
