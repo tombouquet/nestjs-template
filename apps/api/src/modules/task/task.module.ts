@@ -6,6 +6,7 @@ import {
   QUEUE_PROVIDER_TOKEN,
 } from './interfaces/queue-provider.interface';
 import { DirectQueueProvider } from './providers/direct-queue.provider';
+import { QStashProvider } from './providers/qstash.provider';
 
 /**
  * Task module for scheduling and executing tasks
@@ -20,9 +21,13 @@ import { DirectQueueProvider } from './providers/direct-queue.provider';
   providers: [
     TaskService,
     DirectQueueProvider,
+    QStashProvider,
     {
       provide: QUEUE_PROVIDER_TOKEN,
-      useFactory: (directProvider: DirectQueueProvider): QueueProvider => {
+      useFactory: (
+        directProvider: DirectQueueProvider,
+        qstashProvider: QStashProvider,
+      ): QueueProvider => {
         // You can change the provider here by:
         // 1. Direct swap: return a different provider instance
         // 2. Environment-based: use process.env.TASK_QUEUE_PROVIDER to select
@@ -33,6 +38,8 @@ import { DirectQueueProvider } from './providers/direct-queue.provider';
           case 'direct':
           default:
             return directProvider;
+          case 'qstash':
+            return qstashProvider;
           // Add more cases here when you create additional providers:
           // case 'bullmq':
           //   return bullmqProvider;
@@ -40,7 +47,7 @@ import { DirectQueueProvider } from './providers/direct-queue.provider';
           //   return rabbitmqProvider;
         }
       },
-      inject: [DirectQueueProvider],
+      inject: [DirectQueueProvider, QStashProvider],
     },
   ],
   exports: [TaskService],
