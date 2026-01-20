@@ -9,13 +9,6 @@ services:
       POSTGRES_DB: nestjs-template
     ports:
       - '5432:5432'
-  redis:
-    image: redis:7-alpine
-    restart: always
-    ports:
-      - '6379:6379'
-    volumes:
-      - redis-data:/data
   mailpit:
     image: axllent/mailpit
     ports:
@@ -35,5 +28,4 @@ services:
       - minio-data:/data
 
 volumes:
-  redis-data:
   minio-data:

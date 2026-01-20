@@ -7,8 +7,8 @@ app = 'nestjs-template'
 primary_region = 'syd'
 
 [env]
-  NODE_ENV = "production"
-  PORT = "4000"
+  NODE_ENV = production
+  PORT = 4000
 
 [build]
 
