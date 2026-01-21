@@ -1,8 +1,9 @@
-import { Injectable, Logger, Inject } from '@nestjs/common';
+import { Injectable, Inject } from '@nestjs/common';
 import {
   QueueProvider,
   QUEUE_PROVIDER_TOKEN,
 } from './interfaces/queue-provider.interface';
+import { LoggingService } from '../logging/logging.service';
 
 /**
  * Service for scheduling tasks
@@ -10,10 +11,9 @@ import {
  */
 @Injectable()
 export class TaskService {
-  private readonly logger = new Logger(TaskService.name);
-
   constructor(
     @Inject(QUEUE_PROVIDER_TOKEN) private readonly queueProvider: QueueProvider,
+    private readonly loggingService: LoggingService,
   ) {}
 
   /**
@@ -29,8 +29,9 @@ export class TaskService {
     taskName: string,
     body: Record<string, unknown>,
   ): Promise<void> {
-    this.logger.log(
+    this.loggingService.log(
       `Scheduling task: ${taskName} with data: ${JSON.stringify(body)}`,
+      { service: TaskService.name },
     );
     await this.queueProvider.scheduleTask(taskName, body);
   }

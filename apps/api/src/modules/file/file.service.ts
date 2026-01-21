@@ -1,4 +1,4 @@
-import { Injectable, Logger, Inject, NotFoundException } from '@nestjs/common';
+import { Injectable, Inject, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { v4 as uuidv4 } from 'uuid';
@@ -8,16 +8,16 @@ import {
   STORAGE_PROVIDER_TOKEN,
 } from './interfaces/storage-provider.interface';
 import { FileResponseDto } from './dto/file-response.dto';
+import { LoggingService } from '../logging/logging.service';
 
 @Injectable()
 export class FileService {
-  private readonly logger = new Logger(FileService.name);
-
   constructor(
     @Inject(STORAGE_PROVIDER_TOKEN)
     private readonly storageProvider: StorageProvider,
     @InjectRepository(FileEntity)
     private readonly fileRepository: Repository<FileEntity>,
+    private readonly loggingService: LoggingService,
   ) {}
 
   /**
@@ -63,8 +63,9 @@ export class FileService {
 
     const savedFile = await this.fileRepository.save(fileEntity);
 
-    this.logger.log(
+    this.loggingService.log(
       `File uploaded: ${originalName} -> ${storageKey} (${size} bytes)`,
+      { service: FileService.name },
     );
 
     return this.toResponseDto(savedFile);
@@ -123,7 +124,9 @@ export class FileService {
     // Soft delete from database
     await this.fileRepository.softDelete(id);
 
-    this.logger.log(`File deleted: ${file.originalName} (${id})`);
+    this.loggingService.log(`File deleted: ${file.originalName} (${id})`, {
+      service: FileService.name,
+    });
   }
 
   /**

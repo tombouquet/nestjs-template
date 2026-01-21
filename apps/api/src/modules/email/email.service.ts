@@ -1,16 +1,19 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import type { Transporter, SendMailOptions } from 'nodemailer';
 import { createEmailTransporter } from '../../config/email';
 import { SendEmailDto } from './dto/send-email.dto';
 import { EmailTemplateService } from './email-template.service';
 import type { TemplateName, TemplateProps } from './templates';
+import { LoggingService } from '../logging/logging.service';
 
 @Injectable()
 export class EmailService {
-  private readonly logger = new Logger(EmailService.name);
   private transporter: Transporter | null = null;
 
-  constructor(private readonly emailTemplateService: EmailTemplateService) {}
+  constructor(
+    private readonly emailTemplateService: EmailTemplateService,
+    private readonly loggingService: LoggingService,
+  ) {}
 
   private getTransporter(): Transporter {
     if (!this.transporter) {
@@ -41,16 +44,17 @@ export class EmailService {
       };
 
       await this.getTransporter().sendMail(mailOptions);
-      this.logger.log(
+      this.loggingService.log(
         `Email sent successfully to ${to} with subject ${subject}`,
+        { service: EmailService.name },
       );
     } catch (error) {
       const errorMessage =
         error instanceof Error ? error.message : 'Unknown error';
-      const errorStack = error instanceof Error ? error.stack : undefined;
-      this.logger.error(
+      this.loggingService.error(
         `Failed to send email to ${to}: ${errorMessage}`,
-        errorStack,
+        error instanceof Error ? error : undefined,
+        { service: EmailService.name },
       );
       throw error;
     }
@@ -86,9 +90,10 @@ export class EmailService {
     } catch (error) {
       const errorMessage =
         error instanceof Error ? error.message : 'Unknown error';
-      this.logger.error(
+      this.loggingService.error(
         `Failed to send template email "${templateName}" to ${to}: ${errorMessage}`,
-        error instanceof Error ? error.stack : undefined,
+        error instanceof Error ? error : undefined,
+        { service: EmailService.name },
       );
       throw error;
     }

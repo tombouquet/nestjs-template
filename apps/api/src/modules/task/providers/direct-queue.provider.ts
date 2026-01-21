@@ -1,7 +1,8 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
 import { firstValueFrom } from 'rxjs';
 import { QueueProvider } from '../interfaces/queue-provider.interface';
+import { LoggingService } from '../../logging/logging.service';
 
 /**
  * Direct queue provider - executes tasks immediately by making HTTP requests
@@ -9,9 +10,10 @@ import { QueueProvider } from '../interfaces/queue-provider.interface';
  */
 @Injectable()
 export class DirectQueueProvider implements QueueProvider {
-  private readonly logger = new Logger(DirectQueueProvider.name);
-
-  constructor(private readonly httpService: HttpService) {}
+  constructor(
+    private readonly httpService: HttpService,
+    private readonly loggingService: LoggingService,
+  ) {}
 
   /**
    * Schedules a task by directly calling the endpoint
@@ -40,14 +42,17 @@ export class DirectQueueProvider implements QueueProvider {
         }),
       );
 
-      this.logger.log(
+      this.loggingService.log(
         `Task executed directly - ${taskName} with data ${JSON.stringify(body)}`,
+        { service: DirectQueueProvider.name },
       );
     } catch (error) {
       const errorMessage =
         error instanceof Error ? error.message : 'Unknown error';
-      this.logger.error(
+      this.loggingService.error(
         `Failed to execute task ${url} with body ${JSON.stringify(body)} - ${errorMessage}`,
+        error instanceof Error ? error : undefined,
+        { service: DirectQueueProvider.name },
       );
       throw error;
     }

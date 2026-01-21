@@ -1,8 +1,9 @@
-import { Injectable, Logger, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { ConfigEntity } from '../../entities/config.entity';
 import { isTruthy, isFalsy } from '../../utils/boolean-helpers';
+import { LoggingService } from '../logging/logging.service';
 
 export interface ConfigOptions {
   throwIfNotFound?: boolean;
@@ -10,11 +11,10 @@ export interface ConfigOptions {
 
 @Injectable()
 export class ConfigService {
-  private readonly logger = new Logger(ConfigService.name);
-
   constructor(
     @InjectRepository(ConfigEntity)
     private readonly configRepository: Repository<ConfigEntity>,
+    private readonly loggingService: LoggingService,
   ) {}
 
   /**
@@ -92,11 +92,11 @@ export class ConfigService {
     if (config) {
       config.value = value;
       await this.configRepository.save(config);
-      this.logger.log(`Updated configuration key '${key}'`);
+      this.loggingService.log(`Updated configuration key '${key}'`, { service: ConfigService.name });
     } else {
       config = this.configRepository.create({ key, value });
       config = await this.configRepository.save(config);
-      this.logger.log(`Created configuration key '${key}'`);
+      this.loggingService.log(`Created configuration key '${key}'`, { service: ConfigService.name });
     }
 
     return config;
@@ -116,11 +116,11 @@ export class ConfigService {
     const result = await this.configRepository.delete({ key });
 
     if (result.affected && result.affected > 0) {
-      this.logger.log(`Deleted configuration key '${key}'`);
+      this.loggingService.log(`Deleted configuration key '${key}'`, { service: ConfigService.name });
       return true;
     }
 
-    this.logger.warn(`Configuration key '${key}' not found for deletion`);
+    this.loggingService.warn(`Configuration key '${key}' not found for deletion`, { service: ConfigService.name });
     return false;
   }
 

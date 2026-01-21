@@ -1,4 +1,4 @@
-import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
+import { Injectable, OnModuleInit } from '@nestjs/common';
 import {
   S3Client,
   PutObjectCommand,
@@ -9,6 +9,7 @@ import {
 } from '@aws-sdk/client-s3';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import { StorageProvider } from '../interfaces/storage-provider.interface';
+import { LoggingService } from '../../logging/logging.service';
 
 /**
  * Local S3 provider - uses MinIO or any S3-compatible storage
@@ -16,11 +17,10 @@ import { StorageProvider } from '../interfaces/storage-provider.interface';
  */
 @Injectable()
 export class LocalS3Provider implements StorageProvider, OnModuleInit {
-  private readonly logger = new Logger(LocalS3Provider.name);
   private readonly s3Client: S3Client;
   private readonly bucket: string;
 
-  constructor() {
+  constructor(private readonly loggingService: LoggingService) {
     this.bucket = process.env.S3_BUCKET || 'local-files';
 
     this.s3Client = new S3Client({
@@ -44,18 +44,18 @@ export class LocalS3Provider implements StorageProvider, OnModuleInit {
   private async ensureBucketExists(): Promise<void> {
     try {
       await this.s3Client.send(new HeadBucketCommand({ Bucket: this.bucket }));
-      this.logger.log(`Bucket "${this.bucket}" exists`);
+      this.loggingService.log(`Bucket "${this.bucket}" exists`);
     } catch (error) {
       const errorCode = (error as { Code?: string }).Code;
       const errorName = (error as { name?: string }).name;
 
       if (errorName === 'NotFound' || errorCode === 'NotFound') {
         try {
-          this.logger.log(`Creating bucket "${this.bucket}"...`);
+          this.loggingService.log(`Creating bucket "${this.bucket}"...`);
           await this.s3Client.send(
             new CreateBucketCommand({ Bucket: this.bucket }),
           );
-          this.logger.log(`Bucket "${this.bucket}" created successfully`);
+          this.loggingService.log(`Bucket "${this.bucket}" created successfully`);
         } catch (createError) {
           const createErrorCode = (createError as { Code?: string }).Code;
           // Bucket was created by another process, that's fine
@@ -63,13 +63,13 @@ export class LocalS3Provider implements StorageProvider, OnModuleInit {
             createErrorCode === 'BucketAlreadyOwnedByYou' ||
             createErrorCode === 'BucketAlreadyExists'
           ) {
-            this.logger.log(`Bucket "${this.bucket}" already exists`);
+            this.loggingService.log(`Bucket "${this.bucket}" already exists`);
           } else {
             throw createError;
           }
         }
       } else {
-        this.logger.error(`Error checking bucket: ${(error as Error).message}`);
+        this.loggingService.error(`Error checking bucket: ${(error as Error).message}`);
         throw error;
       }
     }
@@ -88,11 +88,11 @@ export class LocalS3Provider implements StorageProvider, OnModuleInit {
           ContentType: mimeType,
         }),
       );
-      this.logger.log(`File uploaded successfully: ${key}`);
+      this.loggingService.log(`File uploaded successfully: ${key}`);
     } catch (error) {
       const errorMessage =
         error instanceof Error ? error.message : 'Unknown error';
-      this.logger.error(`Failed to upload file ${key}: ${errorMessage}`);
+      this.loggingService.error(`Failed to upload file ${key}: ${errorMessage}`);
       throw error;
     }
   }
@@ -119,12 +119,12 @@ export class LocalS3Provider implements StorageProvider, OnModuleInit {
         chunks.push(chunk);
       }
 
-      this.logger.log(`File downloaded successfully: ${key}`);
+      this.loggingService.log(`File downloaded successfully: ${key}`);
       return Buffer.concat(chunks);
     } catch (error) {
       const errorMessage =
         error instanceof Error ? error.message : 'Unknown error';
-      this.logger.error(`Failed to download file ${key}: ${errorMessage}`);
+      this.loggingService.error(`Failed to download file ${key}: ${errorMessage}`);
       throw error;
     }
   }
@@ -140,11 +140,11 @@ export class LocalS3Provider implements StorageProvider, OnModuleInit {
           Key: key,
         }),
       );
-      this.logger.log(`File deleted successfully: ${key}`);
+      this.loggingService.log(`File deleted successfully: ${key}`);
     } catch (error) {
       const errorMessage =
         error instanceof Error ? error.message : 'Unknown error';
-      this.logger.error(`Failed to delete file ${key}: ${errorMessage}`);
+      this.loggingService.error(`Failed to delete file ${key}: ${errorMessage}`);
       throw error;
     }
   }
@@ -160,12 +160,12 @@ export class LocalS3Provider implements StorageProvider, OnModuleInit {
       });
 
       const url = await getSignedUrl(this.s3Client, command, { expiresIn });
-      this.logger.log(`Signed URL generated for: ${key}`);
+      this.loggingService.log(`Signed URL generated for: ${key}`);
       return url;
     } catch (error) {
       const errorMessage =
         error instanceof Error ? error.message : 'Unknown error';
-      this.logger.error(
+      this.loggingService.error(
         `Failed to generate signed URL for ${key}: ${errorMessage}`,
       );
       throw error;

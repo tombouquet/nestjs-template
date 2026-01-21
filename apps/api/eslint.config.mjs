@@ -41,6 +41,20 @@ export default tseslint.config(
       ],
       // Type parameters can be useful for inference even if used once
       '@typescript-eslint/no-unnecessary-type-parameters': 'off',
+      // Prevent using default NestJS Logger - use LoggingService instead for correlation ID support
+      'no-restricted-imports': [
+        'error',
+        {
+          paths: [
+            {
+              name: '@nestjs/common',
+              importNames: ['Logger'],
+              message:
+                'Use LoggingService from src/modules/logging/logging.service instead for correlation ID support.',
+            },
+          ],
+        },
+      ],
     },
   },
 );

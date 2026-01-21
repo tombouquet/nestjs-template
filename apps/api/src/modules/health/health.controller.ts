@@ -1,18 +1,25 @@
-import { Controller, Get, Logger } from '@nestjs/common';
+import { Controller, Get } from '@nestjs/common';
 import { HealthCheckService, HealthCheck } from '@nestjs/terminus';
+import { LoggingService } from '../logging/logging.service';
 
 @Controller('health')
 export class HealthController {
-  private readonly logger = new Logger(HealthController.name);
-
-  constructor(private health: HealthCheckService) {}
+  constructor(
+    private health: HealthCheckService,
+    private loggingService: LoggingService,
+  ) {}
 
   @Get()
   @HealthCheck()
   async check() {
-    this.logger.log('Checking health');
+    this.loggingService.log('Checking health', {
+      service: HealthController.name,
+    });
     const result = await this.health.check([]);
-    this.logger.log('Health check result', result);
+    this.loggingService.log('Health check result', {
+      service: HealthController.name,
+      result,
+    });
     return result;
   }
 }

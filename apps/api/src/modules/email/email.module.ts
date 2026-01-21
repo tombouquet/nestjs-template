@@ -5,8 +5,7 @@ import { EmailController } from './email.controller';
 import { UnimplementedEmailService } from './unimplemented-email.service';
 
 @Module({
-  controllers:
-    process.env.NODE_ENV === 'production' ? [] : [EmailController],
+  controllers: process.env.NODE_ENV === 'production' ? [] : [EmailController],
   providers:
     process.env.NODE_ENV === 'production'
       ? [

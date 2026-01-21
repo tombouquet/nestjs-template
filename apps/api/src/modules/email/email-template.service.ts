@@ -1,17 +1,18 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { pretty, render, toPlainText } from '@react-email/render';
 import {
   getTemplate,
   type TemplateName,
   type TemplateProps,
 } from './templates';
+import { LoggingService } from '../logging/logging.service';
 
 /**
  * Service for rendering React email templates to HTML and plain text
  */
 @Injectable()
 export class EmailTemplateService {
-  private readonly logger = new Logger(EmailTemplateService.name);
+  constructor(private readonly loggingService: LoggingService) {}
 
   /**
    * Renders a React email template to HTML and plain text
@@ -29,15 +30,19 @@ export class EmailTemplateService {
       const html = await pretty(await render(TemplateComponent(props)));
       const text = toPlainText(html);
 
-      this.logger.debug(`Rendered template "${templateName}" successfully`);
+      this.loggingService.debug(
+        `Rendered template "${templateName}" successfully`,
+        { service: EmailTemplateService.name },
+      );
 
       return { html, text };
     } catch (error) {
       const errorMessage =
         error instanceof Error ? error.message : 'Unknown error';
-      this.logger.error(
+      this.loggingService.error(
         `Failed to render template "${templateName}": ${errorMessage}`,
-        error instanceof Error ? error.stack : undefined,
+        error instanceof Error ? error : undefined,
+        { service: EmailTemplateService.name },
       );
       throw new Error(
         `Failed to render template "${templateName}": ${errorMessage}`,

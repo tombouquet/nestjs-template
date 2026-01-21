@@ -1,6 +1,7 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { Client } from '@upstash/qstash';
 import { QueueProvider } from '../interfaces/queue-provider.interface';
+import { LoggingService } from '../../logging/logging.service';
 
 /**
  * QStash queue provider - uses Upstash QStash to schedule tasks
@@ -8,8 +9,9 @@ import { QueueProvider } from '../interfaces/queue-provider.interface';
  */
 @Injectable()
 export class QStashProvider implements QueueProvider {
-  private readonly logger = new Logger(QStashProvider.name);
   private client: Client | null = null;
+
+  constructor(private readonly loggingService: LoggingService) {}
 
   private getClient(): Client {
     if (!this.client) {
@@ -58,14 +60,17 @@ export class QStashProvider implements QueueProvider {
         },
       });
 
-      this.logger.log(
+      this.loggingService.log(
         `Task scheduled via QStash - ${taskName} with data ${JSON.stringify(body)}`,
+        { service: QStashProvider.name },
       );
     } catch (error) {
       const errorMessage =
         error instanceof Error ? error.message : String(error);
-      this.logger.error(
+      this.loggingService.error(
         `Failed to schedule task ${url} with body ${JSON.stringify(body)} - ${errorMessage}`,
+        error instanceof Error ? error : undefined,
+        { service: QStashProvider.name },
       );
       throw error;
     }
