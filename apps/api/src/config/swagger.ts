@@ -36,11 +36,13 @@ export const swaggerSetup = (app: INestApplication) => {
       res.send(document);
     });
 
-  // Write Swagger JSON to file for external tools
-  const outputPath = path.resolve(process.cwd(), 'swagger-spec.json');
-  fs.writeFileSync(outputPath, JSON.stringify(document, null, 2), {
-    encoding: 'utf8',
-  });
+  // Write Swagger JSON to file for external tools (only in development)
+  if (process.env.NODE_ENV !== 'production') {
+    const outputPath = path.resolve(process.cwd(), 'swagger-spec.json');
+    fs.writeFileSync(outputPath, JSON.stringify(document, null, 2), {
+      encoding: 'utf8',
+    });
+  }
 
   // Setup Scalar API Reference
   app.use(
